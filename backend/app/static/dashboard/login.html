@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegalLens AI — Officer Authentication Gateway</title>
+    <meta name="description" content="Ministry of Consumer Affairs Legal Metrology Enforcement Portal Gateway">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy-900: #0a1628;
+            --navy-800: #0f1f3d;
+            --navy-700: #152a4a;
+            --gold-400: #d4a843;
+            --gold-300: #e8c468;
+            --gold-200: #f0d78a;
+            --emerald-500: #10b981;
+            --emerald-400: #34d399;
+            --red-500: #ef4444;
+            --slate-100: #f1f5f9;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--navy-900);
+            color: var(--slate-100);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated background gradient lights */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 30% 40%, rgba(212, 168, 67, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 60%, rgba(16, 185, 129, 0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background: linear-gradient(145deg, rgba(15, 31, 61, 0.95), rgba(10, 22, 40, 0.95));
+            border: 1px solid rgba(212, 168, 67, 0.3);
+            border-radius: 20px;
+            padding: 40px 32px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 2px rgba(212, 168, 67, 0.5);
+            backdrop-filter: blur(20px);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-emblem {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--gold-400), var(--gold-200));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--navy-900);
+            margin: 0 auto 20px auto;
+            box-shadow: 0 8px 24px rgba(212, 168, 67, 0.35);
+        }
+
+        .title-block {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .title-block h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--gold-300);
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .title-block p {
+            font-size: 12px;
+            color: var(--slate-400);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.4;
+        }
+
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--emerald-400);
+            margin-bottom: 24px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--slate-300);
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(10, 22, 40, 0.8);
+            border: 1px solid rgba(212, 168, 67, 0.2);
+            border-radius: 10px;
+            color: var(--slate-100);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--gold-400);
+            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--gold-400), #b8860b);
+            color: var(--navy-900);
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(212, 168, 67, 0.3);
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(212, 168, 67, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-banner {
+            display: none;
+            padding: 12px 14px;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 10px;
+            color: #fca5a5;
+            font-size: 12.5px;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .legal-notice {
+            margin-top: 28px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--slate-500);
+            line-height: 1.5;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="header-emblem">⚖</div>
+        <div class="title-block">
+            <h1>LegalLens AI Portal Gateway</h1>
+            <p>Ministry of Consumer Affairs, Food &amp; Public Distribution<br>Legal Metrology Enforcement Division</p>
+        </div>
+
+        <div class="security-badge">
+            <span>🔒</span>
+            <span>RESTRICTED ACCESS &bull; OFFICIAL USE ONLY</span>
+        </div>
+
+        <div id="error-banner" class="error-banner"></div>
+
+        <form id="portal-login-form" onsubmit="handlePortalLogin(event)">
+            <div class="form-group">
+                <label class="form-label" for="username">Officer Username / Govt ID</label>
+                <input class="form-input" type="text" id="username" required autocomplete="username" placeholder="e.g. admin or officer_id" autofocus>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Security Password</label>
+                <input class="form-input" type="password" id="password" required autocomplete="current-password" placeholder="••••••••••••">
+            </div>
+
+            <button type="submit" id="submit-btn" class="btn-submit">Authenticate &amp; Enter Control Room</button>
+        </form>
+
+        <div class="legal-notice">
+            Authorized personnel only. Access is monitored and logged in compliance with the Legal Metrology Act, 2009 and the IT Act, 2000.
+        </div>
+    </div>
+
+    <script>
+    async function handlePortalLogin(e) {
+        e.preventDefault();
+        const errDiv = document.getElementById('error-banner');
+        const btn = document.getElementById('submit-btn');
+        errDiv.style.display = 'none';
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+
+        btn.disabled = true;
+        btn.textContent = 'Verifying Credentials...';
+
+        try {
+            const formData = new URLSearchParams();
+            formData.append('username', username);
+            formData.append('password', password);
+
+            const res = await fetch('/api/v1/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData,
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                errDiv.textContent = err.detail || 'Authentication failed. Please verify credentials.';
+                errDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Authenticate & Enter Control Room';
+                return;
+            }
+
+            const data = await res.json();
+            const token = data.access_token;
+
+            // Set cookie for server-side HTML rendering
+            document.cookie = 'access_token=' + token + '; path=/; max-age=86400; SameSite=Lax';
+            localStorage.setItem('lensescan_token', token);
+
+            // Reload dashboard with authenticated session
+            window.location.href = '/dashboard';
+        } catch (err) {
+            errDiv.textContent = 'Network or connection error: ' + err.message;
+            errDiv.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Authenticate & Enter Control Room';
+        }
+    }
+    </script>
+</body>
+</html>

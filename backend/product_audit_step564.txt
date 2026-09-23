@@ -1,0 +1,46 @@
+I have inspected and audited all **29 product photographs** in `d:\LenseScan\product` against the statutory requirements of India's **Legal Metrology (Packaged Commodities) Rules, 2011** (LMPC Rules, 2011) and its subsequent amendments.
+
+---
+
+### Executive Summary
+
+| Total Products Examined | Fully Compliant | Defective / Non-Compliant | Critical Violations |
+| :---: | :---: | :---: | :---: |
+| **11 Distinct Products** (29 photos) | **10** | **1** | **Missing Net Quantity Stamp** |
+
+> [!CAUTION]
+> ### 🚨 Critical Violation Detected: Suruchi Dark Soy Sauce Pouch
+> **Files:** `IMG_20260908_202729114.jpg` (Front) & `IMG_20260908_202736771.jpg` (Back)  
+> - **Violation:** **Rule 6(1)(d) & Rule 12 Omission of Net Quantity.**
+> - **Defect Details:** The flexible pouch has the pre-printed label text `"NET QTY.:"`, but the inkjet/laser batch coder area beside it **only printed the Lot No, Packed On, Use By, and MRP (`₹ 20.00`)**. The actual numerical net weight and unit (e.g., `50g` / `100g`) were **completely omitted** during the online coding stage.
+> - **Legal Implication:** Packaging and offering for sale a commodity without a declared net quantity is a compoundable offense under Section 36(1) of the Legal Metrology Act, 2009.
+
+---
+
+### Detailed Product-by-Product Statutory Audit
+
+| # | Product & Brand | Mandatory Declarations Inspected | Legal Metrology Status |
+|---|---|---|:---:|
+| **1** | **Balaji Papdi Gathiya**<br>`IMG_...202107.jpg`, `202122.jpg` | • **Commodity:** Ready-to-eat Savouries / Namkeen<br>• **Net Qty:** 24g<br>• **MRP:** ₹5.00 (Incl. of all taxes)<br>• **Unit Sale Price (USP):** ₹0.21 per g<br>• **PKD / EXP:** 06FEB26 / 07JUN26<br>• **Manufacturer:** Balaji Wafers Pvt. Ltd., Vajdi, Rajkot, PIN 360021<br>• **Consumer Care:** +91-7069014141, `contact@balajiwafers.com` | <span style="color:green;font-weight:bold;">COMPLIANT</span> |
+| **2** | **Balaji Mung Dal**<br>`IMG_...202330.jpg`, `202343.jpg`, `202816.jpg` | • **Net Qty:** 24g<br>• **MRP:** ₹5.00 (Incl. of all taxes)<
+<truncated 3504 bytes>
+unfeast Dark Fantasy Bourbon**<br>`IMG_...202928.jpg` | • **Commodity:** Biscuits / Cookies<br>• **Net Qty:** 450g (5 packs x 90g)<br>• **MRP:** ₹142.00<br>• **Unit Sale Price (USP):** ₹0.32 / g<br>• **PKD / Best Before:** 04/08/26 / 30/04/27<br>• **Manufacturer:** ITC Limited, Bengaluru PIN 560005 (Multi-unit off-pack QR code provided)<br>• **Consumer Care:** 1800 425 444 444, `itccares@itc.in` | <span style="color:green;font-weight:bold;">COMPLIANT</span> |
+| **11** | **Pond's Dreamflower Pink Lily Talc**<br>`IMG_...202925465.jpg`, `202930176.jpg` | • **Commodity:** Perfume Body Powder<br>• **Net Weight:** 300g<br>• **Expiry:** 24 months from mfg<br>• **Country of Origin:** Made in India<br>• **Marketed By:** Hindustan Unilever Limited (HUL), Mumbai 400099<br>• **Consumer Care:** 1800-10-22-221, `lever.care@unilever.com` | <span style="color:green;font-weight:bold;">COMPLIANT</span> |
+
+---
+
+### Key Legal Metrology Observations & Strengths
+
+1. **Unit Sale Price (USP) Rule 6(11):**
+   - Excellent compliance across snack pouches and packaged staples:
+     - Balaji packs consistently print `0.21 Per g` / `0.19 Per g`.
+     - Ram Bandhu prints `USP ₹/g: 0.28`.
+     - Samrat Maida prints `0.09/g`.
+     - Ching's Secret prints `₹0.71/g`.
+2. **Consumer Care Details (Rule 6(1)(k)):**
+   - Every single audited product includes a three-tier grievance mechanism:
+     1. **Designated Person/Department:** e.g., "Consumer Care Executive" / "Levercare".
+     2. **Contact Coordinates:** Toll-free telephone numbers and valid email addresses.
+     3. **Postal Address:** Full address including postal PIN code.
+3. **Automated Defect Detection in LenseScan:**
+   - The Suruchi Soy Sauce pouch serves as an ideal test case for the **LenseScan Compliance Engine**. When evaluated, the `net_quantity` declaration rule fails with confidence `0.0` because the field is blank in the batch code region, automatically triggering an infraction report and violation notice drafting under the SIH 26034 specification.

@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegalLens AI — Enforcement Control Room</title>
+    <meta name="description" content="Ministry of Consumer Affairs Legal Metrology Enforcement Dashboard for monitoring inspections, violations, and product compliance">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --navy-900: #0a1628;
+            --navy-800: #0f1f3d;
+            --navy-700: #152a4a;
+            --navy-600: #1c3557;
+            --navy-500: #243f65;
+            --gold-400: #d4a843;
+            --gold-300: #e8c468;
+            --gold-200: #f0d78a;
+            --emerald-500: #10b981;
+            --emerald-400: #34d399;
+            --red-500: #ef4444;
+            --red-400: #f87171;
+            --amber-500: #f59e0b;
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-400: #94a3b8;
+            --slate-500: #64748b;
+            --glass-bg: rgba(15, 31, 61, 0.6);
+            --glass-border: rgba(212, 168, 67, 0.15);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--navy-900);
+            color: var(--slate-100);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(212, 168, 67, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, var(--navy-800), var(--navy-700));
+            border-bottom: 2px solid var(--gold-400);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .emblem {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--gold-400), var(--gold-200));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--navy-900);
+            box-shadow: 0 4px 16px rgba(212, 168, 67, 0.3);
+        }
+
+        .header-title h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gold-300);
+            letter-spacing: 0.5px;
+        }
+
+        .header-title p {
+            font-size: 11px;
+            color: var(--slate-400);
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--emerald-400);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--emerald-400);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4); }
+            50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+        }
+
+        .auth-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #login-form {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        #login-form input {
+            padding: 8px 12px;
+            border: 1px solid var(--navy-500);
+            border-radius: 8px;
+            background: var(--navy-700);
+            color: var(--slate-100);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            width: 140px;
+            transition: border-color 0.2s;
+        }
+
+        #login-form input:focus {
+            border-color: var(--gold-400);
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold-400), var(--gold-300));
+            color: var(--navy-900);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 168, 67, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--slate-500);
+            color: var(--slate-300);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--gold-400);
+            color: var(--gold-300);
+        }
+
+        #user-info {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--slate-300);
+        }
+
+        #user-info .role-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-admin { background: rgba(212, 168, 67, 0.2); color: var(--gold-300); }
+        .role-supervisor { background: rgba(59, 130, 246, 0.2); color: var(--blue-400); }
+        .role-officer { background: rgba(16, 185, 129, 0.2); color: var(--emerald-400); }
+
+        /* ── Main Content ── */
+        .main-content {
+            padding: 24px 32px;
+            max-width: 1440px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Loading / Auth States ── */
+        .auth-required {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+        }
+
+        .auth-required .lock-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .auth-required h2 {
+            font-size: 24px;
+            color: var(--gold-300);
+            margin-bottom: 8px;
+        }
+
+        .auth-required p {
+            color: var(--slate-400);
+            font-size: 14px;
+        }
+
+        #dashboard-content {
+            display: none;
+        }
+
+        /* ── Filter Bar ── */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar label {
+            font-size: 13px;
+            color: var(--slate-400);
+            font-weight: 500;
+        }
+
+        .filter-bar select, .filter-bar input[type="date"] {
+            padding: 8px 12px;
+            border: 1px solid var(--navy-500);
+            border-radius: 8px;
+            background: var(--navy-700);
+            color: var(--slate-100);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .filter-bar select:focus, .filter-bar input[type="date"]:focus {
+            border-color: var(--gold-400);
+        }
+
+        /* ── KPI Cards ── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .kpi-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .kpi-card:nth-child(1)::before { background: linear-gradient(90deg, var(--blue-400), var(--blue-500)); }
+        .kpi-card:nth-child(2)::before { background: linear-gradient(90deg, var(--emerald-400), var(--emerald-500)); }
+        .kpi-card:nth-child(3)::before { background: linear-gradient(90deg, var(--red-400), var(--red-500)); }
+        .kpi-card:nth-child(4)::before { background: linear-gradient(90deg, var(--gold-300), var(--gold-400)); }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: var(--slate-400);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--slate-100);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .kpi-sub {
+            font-size: 12px;
+            color: var(--slate-500);
+        }
+
+        /* ── Charts Grid ── */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .chart-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--card-shadow);
+        }
+
+        .chart-card h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gold-300);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        /* ── Officer Activity Table ── */
+        .table-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 28px;
+        }
+
+        .table-card h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gold-300);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--slate-400);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .data-table td {
+            padding: 12px 14px;
+            font-size: 13px;
+            color: var(--slate-200);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .data-table tbody tr {
+            transition: background 0.15s;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .compliance-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 6px;
+            background: var(--navy-600);
+            border-radius: 3px;
+            overflow: hidden;
+            max-width: 100px;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        .rate-high .bar-fill { background: var(--emerald-400); }
+        .rate-med .bar-fill { background: var(--amber-500); }
+        .rate-low .bar-fill { background: var(--red-400); }
+
+        .compliance-pct {
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 42px;
+        }
+
+        .pct-high { color: var(--emerald-400); }
+        .pct-med { color: var(--amber-500); }
+        .pct-low { color: var(--red-400); }
+
+        /* ── Inspection Log Table ── */
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-compliant {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--emerald-400);
+        }
+
+        .status-violation {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--red-400);
+        }
+
+        .action-link {
+            color: var(--blue-400);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.15s;
+        }
+
+        .action-link:hover {
+            color: var(--gold-300);
+        }
+
+        .export-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+
+        /* ── Search ── */
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid var(--navy-500);
+            border-radius: 10px;
+            background: var(--navy-700);
+            color: var(--slate-100);
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--slate-500);
+        }
+
+        .search-bar input:focus {
+            border-color: var(--gold-400);
+        }
+
+        /* ── Empty State ── */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--slate-500);
+        }
+
+        .empty-state .icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        /* ── Initial Protected State ── */
+        #dashboard-content {
+            display: none;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 1024px) {
+            .charts-grid { grid-template-columns: 1fr; }
+            .header { padding: 12px 16px; }
+            .main-content { padding: 16px; }
+        }
+
+        @media (max-width: 768px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .header-title h1 { font-size: 14px; }
+            .header-title p { display: none; }
+            #login-form input { width: 100px; }
+            .data-table { font-size: 12px; }
+        }
+
+        /* ── Skeleton Loading ── */
+        .skeleton {
+            background: linear-gradient(90deg, var(--navy-700) 25%, var(--navy-600) 50%, var(--navy-700) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-text { height: 16px; width: 60%; margin-bottom: 8px; }
+        .skeleton-value { height: 36px; width: 40%; }
+    </style>
+</head>
+<body>
+    <!-- ══ Header ══ -->
+    <header class="header">
+        <div class="header-left">
+            <div class="emblem">⚖</div>
+            <div class="header-title">
+                <h1>LegalLens AI — Enforcement Control Room</h1>
+                <p>Ministry of Consumer Affairs, Food &amp; Public Distribution &nbsp;|&nbsp; Legal Metrology Division</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="live-badge">
+                <div class="live-dot"></div>
+                <span id="live-timestamp">Loading...</span>
+            </div>
+            <div class="auth-section">
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <input type="text" id="login-username" placeholder="Username" required autocomplete="username">
+                    <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password">
+                    <button type="submit" class="btn btn-gold">Sign In</button>
+                </form>
+                <div id="user-info">
+                    <span id="user-display"></span>
+                    <span id="role-badge" class="role-badge"></span>
+                    <button class="btn btn-outline btn-sm" onclick="handleLogout()">Sign Out</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ══ Main Content ══ -->
+    <main class="main-content">
+        <!-- Auth Required State -->
+        <div id="auth-required" class="auth-required">
+            <div class="lock-icon">🔒</div>
+            <h2>Authentication Required</h2>
+            <p>Sign in with your LegalLens AI credentials to access the Enforcement Control Room.</p>
+        </div>
+
+        <!-- Dashboard Content (hidden until auth) -->
+        <div id="dashboard-content">
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <label>Period:</label>
+                <select id="filter-days" onchange="refreshDashboard()">
+                    <option value="7">Last 7 Days</option>
+                    <option value="30" selected>Last 30 Days</option>
+                    <option value="90">Last 90 Days</option>
+                    <option value="365">Last Year</option>
+                </select>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Inspections</div>
+                    <div class="kpi-value" id="kpi-total">—</div>
+                    <div class="kpi-sub" id="kpi-total-sub"></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Compliance Rate</div>
+                    <div class="kpi-value" id="kpi-rate">—</div>
+                    <div class="kpi-sub" id="kpi-rate-sub"></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Violations Flagged</div>
+                    <div class="kpi-value" id="kpi-violations">—</div>
+                    <div class="kpi-sub" id="kpi-violations-sub"></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">This Week</div>
+                    <div class="kpi-value" id="kpi-week">—</div>
+                    <div class="kpi-sub" id="kpi-week-sub">inspections</div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>📊 Violation Breakdown by Type</h3>
+                    <div class="chart-container">
+                        <canvas id="violation-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>📈 Enforcement Activity Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="trend-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Officer Activity Table -->
+            <div class="table-card" id="officer-section">
+                <h3>👤 Officer Enforcement Activity</h3>
+                <table class="data-table" id="officer-table">
+                    <thead>
+                        <tr>
+                            <th>Officer</th>
+                            <th>Total Inspections</th>
+                            <th>Compliant</th>
+                            <th>Non-Compliant</th>
+                            <th>Compliance Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="officer-tbody">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Inspection Log -->
+            <div class="table-card">
+                <h3>📋 Inspection Audit Log</h3>
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search by filename, SHA-256 hash, or summary..." oninput="filterInspections()">
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Status</th>
+                            <th>Fields</th>
+                            <th>SHA-256</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inspection-tbody">
+                    </tbody>
+                </table>
+                <div class="export-actions">
+                    <button class="btn btn-outline btn-sm" onclick="exportCSV()">📥 Export CSV</button>
+                    <button class="btn btn-outline btn-sm" onclick="exportJSON()">📥 Export JSON</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    // ── State ──
+    const API_BASE = window.location.origin + '/api/v1';
+    let authToken = localStorage.getItem('lensescan_token');
+    let currentUser = null;
+    let allInspections = [];
+    let violationChart = null;
+    let trendChart = null;
+
+    // ── Init ──
+    document.addEventListener('DOMContentLoaded', () => {
+        updateClock();
+        setInterval(updateClock, 1000);
+        if (authToken) {
+            showDashboard();
+        }
+    });
+
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('live-timestamp').textContent =
+            now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', hour12: true });
+    }
+
+    // ── Auth ──
+    async function handleLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+
+        try {
+            const formData = new URLSearchParams();
+            formData.append('username', username);
+            formData.append('password', password);
+
+            const res = await fetch(API_BASE + '/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData,
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                alert('Login failed: ' + (err.detail || 'Invalid credentials'));
+                return;
+            }
+
+            const data = await res.json();
+            authToken = data.access_token;
+            localStorage.setItem('lensescan_token', authToken);
+            showDashboard();
+        } catch (err) {
+            alert('Connection error: ' + err.message);
+        }
+    }
+
+    function handleLogout() {
+        authToken = null;
+        currentUser = null;
+        localStorage.removeItem('lensescan_token');
+        document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
+        window.location.href = '/dashboard';
+    }
+
+    async function showDashboard() {
+        // Verify token by fetching profile
+        try {
+            const res = await apiFetch('/auth/me');
+            if (!res.ok) {
+                handleLogout();
+                return;
+            }
+            currentUser = await res.json();
+        } catch {
+            handleLogout();
+            return;
+        }
+
+        // Update UI
+        document.getElementById('auth-required').style.display = 'none';
+        document.getElementById('dashboard-content').style.display = 'block';
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('user-info').style.display = 'flex';
+        document.getElementById('user-display').textContent = currentUser.full_name || currentUser.username;
+
+        const roleBadge = document.getElementById('role-badge');
+        const role = currentUser.role || 'officer';
+        roleBadge.textContent = role;
+        roleBadge.className = 'role-badge role-' + role;
+
+        // Officers don't see officer-activity table
+        const officerSection = document.getElementById('officer-section');
+        officerSection.style.display = (role === 'officer') ? 'none' : 'block';
+
+        refreshDashboard();
+    }
+
+    async function apiFetch(endpoint, options = {}) {
+        return fetch(API_BASE + endpoint, {
+            ...options,
+            headers: {
+                'Authorization': 'Bearer ' + authToken,
+                ...(options.headers || {}),
+            },
+        });
+    }
+
+    // ── Dashboard Data ──
+    async function refreshDashboard() {
+        const days = document.getElementById('filter-days').value;
+        await Promise.all([
+            loadSummary(days),
+            loadViolations(days),
+            loadTrends(days),
+            loadOfficerActivity(days),
+            loadInspections(),
+        ]);
+    }
+
+    async function loadSummary(days) {
+        try {
+            const res = await apiFetch('/dashboard/summary?days=' + days);
+            const data = await res.json();
+
+            document.getElementById('kpi-total').textContent = data.total_inspections.toLocaleString();
+            document.getElementById('kpi-total-sub').textContent = `${data.period_inspections} in last ${days} days`;
+
+            document.getElementById('kpi-rate').textContent = data.compliance_rate_pct + '%';
+            document.getElementById('kpi-rate-sub').textContent = `${data.compliant_count} compliant of ${data.total_inspections}`;
+
+            document.getElementById('kpi-violations').textContent = data.non_compliant_count.toLocaleString();
+            document.getElementById('kpi-violations-sub').textContent = `${data.total_violation_flags} field-level flags`;
+
+            document.getElementById('kpi-week').textContent = data.week_inspections.toLocaleString();
+        } catch (err) {
+            console.error('Failed to load summary:', err);
+        }
+    }
+
+    async function loadViolations(days) {
+        try {
+            const res = await apiFetch('/dashboard/violations-by-type?days=' + days);
+            const data = await res.json();
+
+            const cats = data.by_category;
+            const labels = ['Missing Declaration', 'Font Violation', 'Format Violation', 'Placement Violation', 'Other'];
+            const values = [
+                cats.missing_declaration,
+                cats.font_violation,
+                cats.format_violation,
+                cats.placement_violation,
+                cats.other_violation,
+            ];
+            const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6', '#6b7280'];
+
+            if (violationChart) violationChart.destroy();
+
+            const ctx = document.getElementById('violation-chart').getContext('2d');
+            violationChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor: 'rgba(10, 22, 40, 0.8)',
+                        borderWidth: 2,
+                        hoverOffset: 6,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#94a3b8',
+                                font: { family: 'Inter', size: 12 },
+                                padding: 12,
+                                usePointStyle: true,
+                                pointStyle: 'rectRounded',
+                            },
+                        },
+                    },
+                },
+            });
+        } catch (err) {
+            console.error('Failed to load violations:', err);
+        }
+    }
+
+    async function loadTrends(days) {
+        try {
+            const res = await apiFetch('/dashboard/trends?days=' + days);
+            const data = await res.json();
+
+            if (trendChart) trendChart.destroy();
+
+            const ctx = document.getElementById('trend-chart').getContext('2d');
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.dates.map(d => {
+                        const date = new Date(d);
+                        return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                    }),
+                    datasets: [
+                        {
+                            label: 'Total',
+                            data: data.totals,
+                            borderColor: '#60a5fa',
+                            backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                        },
+                        {
+                            label: 'Compliant',
+                            data: data.compliant,
+                            borderColor: '#34d399',
+                            backgroundColor: 'rgba(52, 211, 153, 0.05)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                        },
+                        {
+                            label: 'Non-Compliant',
+                            data: data.non_compliant,
+                            borderColor: '#f87171',
+                            backgroundColor: 'rgba(248, 113, 113, 0.05)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { intersect: false, mode: 'index' },
+                    scales: {
+                        x: {
+                            ticks: { color: '#64748b', font: { family: 'Inter', size: 11 } },
+                            grid: { color: 'rgba(255,255,255,0.04)' },
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#64748b', font: { family: 'Inter', size: 11 } },
+                            grid: { color: 'rgba(255,255,255,0.04)' },
+                        },
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#94a3b8',
+                                font: { family: 'Inter', size: 12 },
+                                usePointStyle: true,
+                            },
+                        },
+                    },
+                },
+            });
+        } catch (err) {
+            console.error('Failed to load trends:', err);
+        }
+    }
+
+    async function loadOfficerActivity(days) {
+        const tbody = document.getElementById('officer-tbody');
+        try {
+            const res = await apiFetch('/dashboard/officer-activity?days=' + days);
+            if (res.status === 403) {
+                // Officer role — hide table silently
+                return;
+            }
+            const data = await res.json();
+
+            if (!data.officers || data.officers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No officer activity in this period.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.officers.map(o => {
+                const rate = o.compliance_rate_pct;
+                const rateClass = rate >= 80 ? 'high' : rate >= 50 ? 'med' : 'low';
+                return `<tr>
+                    <td><strong>${escapeHtml(o.full_name || o.username)}</strong></td>
+                    <td>${o.total_inspections}</td>
+                    <td>${o.compliant}</td>
+                    <td>${o.non_compliant}</td>
+                    <td>
+                        <div class="compliance-bar rate-${rateClass}">
+                            <div class="bar-track"><div class="bar-fill" style="width:${rate}%"></div></div>
+                            <span class="compliance-pct pct-${rateClass}">${rate}%</span>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        } catch (err) {
+            console.error('Failed to load officer activity:', err);
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Failed to load data.</td></tr>';
+        }
+    }
+
+    async function loadInspections() {
+        const tbody = document.getElementById('inspection-tbody');
+        try {
+            const res = await apiFetch('/inspections/?limit=100');
+            allInspections = await res.json();
+            renderInspections(allInspections);
+        } catch (err) {
+            console.error('Failed to load inspections:', err);
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Failed to load inspection data.</td></tr>';
+        }
+    }
+
+    function renderInspections(inspections) {
+        const tbody = document.getElementById('inspection-tbody');
+        if (inspections.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><div class="icon">📭</div>No inspections found.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = inspections.map(insp => {
+            const date = new Date(insp.created_at);
+            const dateStr = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+            const hashShort = insp.image_hash_sha256 ? insp.image_hash_sha256.substring(0, 12) + '…' : '—';
+            const statusClass = insp.overall_compliant ? 'status-compliant' : 'status-violation';
+            const statusText = insp.overall_compliant ? 'Compliant' : 'Violation';
+            const idShort = insp.id.substring(0, 8);
+
+            return `<tr>
+                <td><code style="font-size:11px;color:var(--slate-400)">${escapeHtml(idShort)}</code></td>
+                <td>${escapeHtml(insp.image_filename || '—')}</td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>${insp.compliant_fields}/${insp.total_fields}</td>
+                <td><code style="font-size:10px;color:var(--slate-500)" title="${escapeHtml(insp.image_hash_sha256 || '')}">${hashShort}</code></td>
+                <td>${dateStr}</td>
+                <td>
+                    <a class="action-link" onclick="downloadPDF('${insp.id}')">PDF</a>
+                    &nbsp;|&nbsp;
+                    <a class="action-link" onclick="viewDetail('${insp.id}')">Detail</a>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    function filterInspections() {
+        const q = document.getElementById('search-input').value.toLowerCase();
+        if (!q) {
+            renderInspections(allInspections);
+            return;
+        }
+        const filtered = allInspections.filter(i =>
+            (i.image_filename || '').toLowerCase().includes(q) ||
+            (i.image_hash_sha256 || '').toLowerCase().includes(q) ||
+            (i.summary || '').toLowerCase().includes(q) ||
+            (i.id || '').toLowerCase().includes(q)
+        );
+        renderInspections(filtered);
+    }
+
+    // ── Actions ──
+    async function downloadPDF(id) {
+        try {
+            const res = await apiFetch('/inspections/' + id + '/notice.pdf');
+            if (!res.ok) { alert('Failed to download PDF'); return; }
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'LMPC_Notice_' + id.substring(0, 8) + '.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            alert('Download error: ' + err.message);
+        }
+    }
+
+    async function viewDetail(id) {
+        try {
+            const res = await apiFetch('/inspections/' + id);
+            const data = await res.json();
+            // Show in a simple modal-like alert for now
+            const declarations = data.declarations || [];
+            let details = `Inspection: ${data.id}\n`;
+            details += `File: ${data.image_filename}\n`;
+            details += `SHA-256: ${data.image_hash_sha256}\n`;
+            details += `Status: ${data.overall_compliant ? 'COMPLIANT' : 'NON-COMPLIANT'}\n`;
+            details += `Fields: ${data.compliant_fields}/${data.total_fields}\n`;
+            details += `DPI: ${data.dpi_used}\n\n`;
+            details += `— Declarations —\n`;
+            declarations.forEach(d => {
+                const status = d.compliant ? '✅' : '❌';
+                details += `${status} ${d.field_name}: ${d.value || '(not detected)'}\n`;
+                if (d.violations && d.violations.length > 0) {
+                    d.violations.forEach(v => { details += `   ⚠ ${v}\n`; });
+                }
+            });
+            alert(details);
+        } catch (err) {
+            alert('Error: ' + err.message);
+        }
+    }
+
+    function exportCSV() {
+        if (allInspections.length === 0) { alert('No data to export.'); return; }
+        const headers = ['ID', 'Image', 'Compliant', 'Compliant Fields', 'Total Fields', 'Non-Compliant Fields', 'SHA-256', 'Summary', 'Date'];
+        const rows = allInspections.map(i => [
+            i.id, i.image_filename, i.overall_compliant, i.compliant_fields,
+            i.total_fields, i.non_compliant_fields, i.image_hash_sha256, '"' + (i.summary || '').replace(/"/g, '""') + '"', i.created_at,
+        ]);
+        const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        downloadBlob(csv, 'lensescan_inspections.csv', 'text/csv');
+    }
+
+    function exportJSON() {
+        if (allInspections.length === 0) { alert('No data to export.'); return; }
+        const json = JSON.stringify(allInspections, null, 2);
+        downloadBlob(json, 'lensescan_inspections.json', 'application/json');
+    }
+
+    function downloadBlob(content, filename, type) {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+    </script>
+</body>
+</html>

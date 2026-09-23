@@ -1,0 +1,8 @@
+image_id,product_id,declaration_type,ground_truth_mm,measurement_method,calibration_method,system_font_height_mm,absolute_error_mm,notes
+IMG_001_PARLEG,parle_g_80g,net_quantity,2.00,ruler_mm,aruco_40mm,2.05,0.05,Flat carton surface under standard indoor LED
+IMG_001_PARLEG,parle_g_80g,mrp,2.50,ruler_mm,aruco_40mm,2.46,0.04,MRP declaration with incl of all taxes text
+IMG_002_MAGGI,maggi_70g,mrp,2.00,ruler_mm,aruco_40mm,1.95,0.05,Pouch package with slight planar wrinkle
+IMG_002_MAGGI,maggi_70g,net_quantity,2.00,ruler_mm,aruco_40mm,2.02,0.02,Front PDP net weight text
+IMG_003_SALT,tata_salt_1kg,mrp,3.00,ruler_mm,coin_26mm,2.88,0.12,Calibrated using 26mm coin reference fallback
+IMG_003_SALT,tata_salt_1kg,net_quantity,3.00,ruler_mm,coin_26mm,2.90,0.10,26mm coin placed beside net quantity
+IMG_004_DETTOL,dettol_handwash_200ml,net_quantity,2.50,ruler_mm,card_85x54mm,2.40,0.10,Bottle surface with ID card reference
